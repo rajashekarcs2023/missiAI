@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmergencyAI - Voice-Guided Crisis Response</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .emergency-header {
+            background-color: #dc3545;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        .emergency-btn {
+            height: 150px;
+            margin-bottom: 20px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .emergency-btn:hover {
+            transform: scale(1.05);
+        }
+        .medical {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .fire {
+            background-color: #fd7e14;
+            border-color: #fd7e14;
+        }
+        .security {
+            background-color: #6f42c1;
+            border-color: #6f42c1;
+        }
+        .natural {
+            background-color: #198754;
+            border-color: #198754;
+        }
+        .steps-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            min-height: 300px;
+            display: none;
+        }
+        .step {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-left: 4px solid #0d6efd;
+            background-color: #f8f9fa;
+        }
+        .emergency-img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+        .audio-controls {
+            margin-top: 20px;
+            display: none;
+        }
+        .location-info {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .back-btn {
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="emergency-header">
+        <div class="container">
+            <h1 class="text-center"><i class="bi bi-shield-fill-check"></i> EmergencyAI</h1>
+            <p class="text-center lead">Voice-Guided Crisis Response Assistant</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-info" role="alert">
+                    <h4 class="alert-heading">Welcome to EmergencyAI!</h4>
+                    <p>Select an emergency scenario below to receive immediate voice-guided assistance. In a real emergency, always call emergency services first.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="emergency-selection">
+            <div class="row">
+                <div class="col-md-6">
+                    <button class="btn btn-danger emergency-btn medical w-100" onclick="handleEmergency('medical')">
+                        <i class="bi bi-heart-pulse-fill me-2"></i> Medical Emergency
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-warning emergency-btn fire w-100 text-white" onclick="handleEmergency('fire')">
+                        <i class="bi bi-fire me-2"></i> Fire Emergency
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <button class="btn btn-primary emergency-btn security w-100" onclick="handleEmergency('security')">
+                        <i class="bi bi-shield-lock-fill me-2"></i> Security Threat
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-success emergency-btn natural w-100" onclick="handleEmergency('natural')">
+                        <i class="bi bi-tsunami me-2"></i> Natural Disaster
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="emergency-response" class="steps-container">
+            <h2 id="emergency-title" class="mb-4"></h2>
+            <div id="emergency-steps"></div>
+            <img id="emergency-image" class="emergency-img" src="" alt="Emergency guidance visual">
+            <div id="audio-player" class="audio-controls">
+                <h4><i class="bi bi-volume-up"></i> Voice Guidance</h4>
+                <div id="audio-status" class="alert alert-info mb-2" style="display: none;">Generating voice guidance...</div>
+                <audio id="guidance-audio" controls>
+                    <source src="" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+                <div class="btn-group mt-2">
+                    <button class="btn btn-primary" onclick="playAudio()">Play Voice Guidance</button>
+                    <button class="btn btn-secondary" onclick="playTestAudio()">Play Test Audio</button>
+                </div>
+                <div class="mt-2 small text-muted" id="audio-debug-info"></div>
+            </div>
+            <div class="location-info mt-4">
+                <h5><i class="bi bi-geo-alt-fill"></i> Your Location</h5>
+                <p id="location-text">Determining your location...</p>
+                <p><strong>Nearest Emergency Services:</strong> <span id="emergency-services">Locating...</span></p>
+            </div>
+            <button id="back-button" class="btn btn-secondary back-btn" onclick="goBack()">
+                <i class="bi bi-arrow-left"></i> Back to Emergency Selection
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js"></script>
+    <script>
+        // Emergency data definitions
+        const emergencyData = {
+            medical: {
+                title: "Medical Emergency Response",
+                steps: [
+                    "Check if the person is responsive by tapping their shoulder and asking if they're okay.",
+                    "If unresponsive, call emergency services (911) immediately or ask someone else to call while you stay with the person.",
+                    "Check for breathing. Look for chest movement, listen for breath sounds, and feel for breath on your cheek.",
+                    "If not breathing normally, begin CPR if trained. Push hard and fast in the center of the chest.",
+                    "If an AED is available, use it following the device instructions.",
+                    "Continue CPR until emergency services arrive or the person shows signs of life."
+                ],
+                image: "https://www.redcross.org/content/dam/redcross/training-services/first-aid-cpr-aed/Hands-Only-CPR-Steps-Infographic.jpg"
+            },
+            fire: {
+                title: "Fire Emergency Response",
+                steps: [
+                    "Activate the nearest fire alarm and call emergency services (911).",
+                    "If the fire is small and contained, use a fire extinguisher if you're trained to do so.",
+                    "Evacuate the building immediately. Do not use elevators.",
+                    "If there's smoke, stay low to the ground where air is clearer.",
+                    "Feel doors before opening them. If a door is hot, do not open it - find another exit route.",
+                    "Once outside, move to your designated assembly point and wait for emergency services."
+                ],
+                image: "https://www.nfpa.org/-/media/Images/Public-Education/By-topic/Escape-planning/Escape_plan.ashx"
+            },
+            security: {
+                title: "Security Threat Response",
+                steps: [
+                    "If possible, evacuate the area immediately.",
+                    "If evacuation is not possible, find a place to hide where you won't be trapped.",
+                    "Lock and barricade doors, close blinds, and turn off lights.",
+                    "Silence your cell phone and remain quiet.",
+                    "Call emergency services (911) when it's safe to do so.",
+                    "When law enforcement arrives, keep hands visible and follow all instructions."
+                ],
+                image: "https://www.ready.gov/sites/default/files/2019-10/active_shooter_508.jpg"
+            },
+            natural: {
+                title: "Natural Disaster Response",
+                steps: [
+                    "Identify what type of disaster is occurring (earthquake, flood, tornado, etc.).",
+                    "Move to the safest location based on the disaster type.",
+                    "For earthquakes: Drop, Cover, and Hold On under sturdy furniture.",
+                    "For floods: Move to higher ground immediately.",
+                    "For tornadoes: Go to a basement or interior room on the lowest floor.",
+                    "Stay informed through emergency broadcasts and follow official instructions."
+                ],
+                image: "https://www.ready.gov/sites/default/files/2020-03/ready_earthquake-what-to-do-infographic.jpg"
+            }
+        };
+
+        // Check if our API is available when the page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const apiAvailable = await window.EmergencyAI.checkApiHealth();
+                if (!apiAvailable) {
+                    alert('Warning: EmergencyAI voice service is currently unavailable. Visual guidance will still be provided.');
+                }
+            } catch (error) {
+                console.error('API health check failed:', error);
+            }
+        });
+
+        // Main function to handle emergency selection
+        async function handleEmergency(type) {
+            // Show loading indicator
+            const loadingElement = document.createElement('div');
+            loadingElement.className = 'loading-spinner';
+            loadingElement.innerHTML = `
+                <div class="spinner-border text-danger" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Generating emergency guidance...</p>
+            `;
+            document.getElementById('emergency-selection').appendChild(loadingElement);
+            loadingElement.style.display = 'block';
+            
+            // Hide selection and show response
+            document.getElementById('emergency-selection').style.display = 'none';
+            document.getElementById('emergency-response').style.display = 'block';
+            document.getElementById('back-button').style.display = 'block';
+            
+            // Set emergency information
+            const emergency = emergencyData[type];
+            document.getElementById('emergency-title').innerText = emergency.title;
+            
+            // Clear previous steps
+            const stepsContainer = document.getElementById('emergency-steps');
+            stepsContainer.innerHTML = '';
+            
+            // Add steps
+            emergency.steps.forEach((step, index) => {
+                const stepElement = document.createElement('div');
+                stepElement.className = 'step';
+                stepElement.innerHTML = `<strong>Step ${index + 1}:</strong> ${step}`;
+                stepsContainer.appendChild(stepElement);
+            });
+            
+            // Set image
+            const imageElement = document.getElementById('emergency-image');
+            imageElement.src = emergency.image;
+            imageElement.style.display = 'block';
+            
+            // Set up audio
+            document.getElementById('audio-player').style.display = 'block';
+            
+            // Get location
+            getLocation();
+            
+            // Show audio status
+            document.getElementById('audio-status').style.display = 'block';
+            document.getElementById('audio-status').innerText = 'Generating voice guidance...';
+            
+            // Generate audio using our MiniMax Direct API
+            try {
+                const audioResult = await window.EmergencyAI.generateAudio(type);
+                console.log('Full audio result:', audioResult);
+                
+                if (audioResult.success) {
+                    // Set the audio source to the generated file
+                    const audioPath = audioResult.audioPath;
+                    document.getElementById('guidance-audio').src = audioPath;
+                    console.log('Audio ready at:', audioPath);
+                    
+                    // Update status
+                    document.getElementById('audio-status').className = 'alert alert-success mb-2';
+                    document.getElementById('audio-status').innerText = 'Voice guidance ready!';
+                    
+                    // Show debug info
+                    document.getElementById('audio-debug-info').innerText = `Audio file: ${audioPath}`;
+                    
+                    // Auto-play the audio guidance
+                    playAudio();
+                } else {
+                    console.error('Failed to generate audio:', audioResult.error);
+                    // Update status
+                    document.getElementById('audio-status').className = 'alert alert-danger mb-2';
+                    document.getElementById('audio-status').innerText = 'Error generating voice guidance. Using fallback audio.';
+                    
+                    // Fallback to a default audio file
+                    document.getElementById('guidance-audio').src = 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand3.wav';
+                }
+            } catch (error) {
+                console.error('Error generating audio:', error);
+            }
+            
+            // Try to generate a custom image as well
+            try {
+                const imageResult = await window.EmergencyAI.generateImage(type);
+                if (imageResult.success && imageResult.imagePath) {
+                    // If successful, update the image
+                    const imagePath = imageResult.imagePath.replace('./output/', '/output/');
+                    // We'll keep the default image for now, but in a real app we would use:
+                    // imageElement.src = imagePath;
+                    console.log('Generated image available at:', imagePath);
+                }
+            } catch (error) {
+                console.error('Error generating image:', error);
+            }
+        }
+        
+        function playAudio() {
+            const audio = document.getElementById('guidance-audio');
+            const debugInfo = document.getElementById('audio-debug-info');
+            
+            // Show current audio source for debugging
+            debugInfo.innerText = `Attempting to play: ${audio.src}`;
+            
+            // Check if audio source is set
+            if (!audio.src || audio.src === window.location.href) {
+                console.error('No audio source set');
+                debugInfo.innerText += '\nError: No audio source set';
+                document.getElementById('audio-status').className = 'alert alert-danger mb-2';
+                document.getElementById('audio-status').innerText = 'Error: No audio file available';
+                return;
+            }
+            
+            // Try to play the audio
+            audio.play()
+                .then(() => {
+                    console.log('Audio playing successfully');
+                    debugInfo.innerText += '\nStatus: Playing';
+                    document.getElementById('audio-status').className = 'alert alert-success mb-2';
+                    document.getElementById('audio-status').innerText = 'Voice guidance playing...';
+                })
+                .catch(e => {
+                    console.error('Error playing audio:', e);
+                    debugInfo.innerText += `\nError playing: ${e.message}`;
+                    document.getElementById('audio-status').className = 'alert alert-warning mb-2';
+                    document.getElementById('audio-status').innerText = 'Click Play button to hear guidance';
+                });
+        }
+        
+        function playTestAudio() {
+            const audio = document.getElementById('guidance-audio');
+            const debugInfo = document.getElementById('audio-debug-info');
+            
+            // Show audio status
+            document.getElementById('audio-status').style.display = 'block';
+            document.getElementById('audio-status').className = 'alert alert-info mb-2';
+            document.getElementById('audio-status').innerText = 'Loading test audio...';
+            
+            // Set the audio source to our test file
+            audio.src = '/test-audio.mp3';
+            debugInfo.innerText = `Test audio source: ${audio.src}`;
+            
+            // Try to play the audio
+            audio.play()
+                .then(() => {
+                    console.log('Test audio playing successfully');
+                    debugInfo.innerText += '\nStatus: Playing test audio';
+                    document.getElementById('audio-status').className = 'alert alert-success mb-2';
+                    document.getElementById('audio-status').innerText = 'Test audio playing...';
+                })
+                .catch(e => {
+                    console.error('Error playing test audio:', e);
+                    debugInfo.innerText += `\nError playing test audio: ${e.message}`;
+                    document.getElementById('audio-status').className = 'alert alert-warning mb-2';
+                    document.getElementById('audio-status').innerText = 'Error playing test audio';
+                });
+        }
+        
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, handleLocationError);
+            } else {
+                document.getElementById('location-text').innerText = "Geolocation is not supported by this browser.";
+            }
+        }
+        
+        function handleLocationError(error) {
+            let errorMessage = "Unable to retrieve your location. ";
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMessage += "User denied the request for Geolocation.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage += "Location information is unavailable.";
+                    break;
+                case error.TIMEOUT:
+                    errorMessage += "The request to get user location timed out.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    errorMessage += "An unknown error occurred.";
+                    break;
+            }
+            document.getElementById('location-text').innerText = errorMessage;
+            document.getElementById('emergency-services').innerText = "Location services unavailable. Please call 911 directly.";
+        }
+        
+        function showPosition(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            document.getElementById('location-text').innerHTML = `Latitude: ${lat.toFixed(4)}, Longitude: ${lon.toFixed(4)}`;
+            document.getElementById('emergency-services').innerText = "General Hospital (0.8 miles), Fire Station 3 (1.2 miles)";
+        }
+        
+        function goBack() {
+            document.getElementById('emergency-selection').style.display = 'block';
+            document.getElementById('emergency-response').style.display = 'none';
+            document.getElementById('back-button').style.display = 'none';
+            
+            // Stop audio if playing
+            const audio = document.getElementById('guidance-audio');
+            audio.pause();
+            audio.currentTime = 0;
+        }
+    </script>
+</body>
+</html>

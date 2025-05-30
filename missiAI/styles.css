@@ -1,0 +1,198 @@
+/* EmergencyAI - Main Stylesheet */
+
+:root {
+    --primary-color: #dc3545;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --info-color: #0dcaf0;
+    --warning-color: #fd7e14;
+    --danger-color: #dc3545;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-color);
+    margin: 0;
+    padding: 0;
+}
+
+.emergency-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 20px 0;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.emergency-logo {
+    font-size: 2.5rem;
+    margin-right: 10px;
+}
+
+.emergency-btn {
+    height: 150px;
+    margin-bottom: 20px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.emergency-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+}
+
+.emergency-btn i {
+    font-size: 2rem;
+    margin-right: 15px;
+}
+
+.medical {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.fire {
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+}
+
+.security {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+}
+
+.natural {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.steps-container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    min-height: 300px;
+    display: none;
+}
+
+.step {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-left: 4px solid #0d6efd;
+    background-color: #f8f9fa;
+    border-radius: 0 5px 5px 0;
+    transition: all 0.3s ease;
+}
+
+.step:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.emergency-img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-top: 20px;
+    display: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.audio-controls {
+    margin-top: 30px;
+    display: none;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.audio-controls button {
+    margin-top: 10px;
+}
+
+.location-info {
+    background-color: #e9ecef;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.back-btn {
+    margin-top: 30px;
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    transform: translateX(-5px);
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Loading indicator */
+.loading-spinner {
+    display: none;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .emergency-btn {
+        height: 120px;
+        font-size: 20px;
+    }
+    
+    .emergency-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .step {
+        padding: 10px;
+    }
+}
+
+/* Accessibility improvements */
+.btn:focus {
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.5);
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
