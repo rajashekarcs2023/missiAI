@@ -1,4 +1,4 @@
-# EmergencyAI - Voice-Powered Crisis Response Assistant
+# MissiAI - Voice-Powered Crisis Response Assistant
 
 EmergencyAI is a life-saving application that provides immediate, voice-guided assistance during emergencies or crisis situations. It walks users through first aid procedures, emergency protocols, and crisis de-escalation with calm, clear voice instructions.
 
